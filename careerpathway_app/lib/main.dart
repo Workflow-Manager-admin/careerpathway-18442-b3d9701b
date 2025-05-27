@@ -262,21 +262,216 @@ class _CareerPathwayDashboardState extends State<CareerPathwayDashboard> {
 // Placeholder section widgets for dashboard scaffolding
 
 class _SkillRecommendationsSection extends StatelessWidget {
+  // Sample placeholder: user current skills and missing skills for dream job
+  final List<String> currentSkills = const [
+    "Dart", "Flutter", "Git", "REST APIs"
+  ];
+  final List<Map<String, dynamic>> suggestedSkills = const [
+    {
+      "skill": "Unit Testing",
+      "importance": "High",
+      "reason": "Frequently required for developer roles",
+    },
+    {
+      "skill": "State Management (e.g. Provider, Bloc)",
+      "importance": "High",
+      "reason": "Increases code maintainability in large Flutter apps",
+    },
+    {
+      "skill": "CI/CD Basics",
+      "importance": "Medium",
+      "reason": "Improves software delivery process",
+    },
+    {
+      "skill": "Firebase",
+      "importance": "Medium",
+      "reason": "Common in modern mobile app stacks",
+    },
+    {
+      "skill": "UI/UX Fundamentals",
+      "importance": "Low",
+      "reason": "Helpful for delivering user-friendly apps",
+    },
+  ];
+
   @override
   Widget build(BuildContext context) {
     // PUBLIC_INTERFACE
-    return Center(
+    final theme = Theme.of(context);
+    final Color primary = const Color(0xFF2D6A4F);
+    final Color accent = const Color(0xFFFFD166);
+    final Color chipBg = const Color(0xFF40916C).withOpacity(0.13);
+
+    // Visual skill gap "bar" and chips for recommended skills
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(28),
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: const [
-          Icon(Icons.star, size: 48, color: Color(0xFF2D6A4F)),
-          SizedBox(height: 10),
-          Text(
-            'Skill Recommendations',
-            style: TextStyle(fontSize: 22, fontWeight: FontWeight.w600),
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          // Section Title and Icon
+          Row(
+            children: const [
+              Icon(Icons.grade, size: 32, color: Color(0xFF2D6A4F)),
+              SizedBox(width: 8),
+              Text(
+                "Skill Gap Analysis",
+                style: TextStyle(
+                  fontSize: 22,
+                  fontWeight: FontWeight.w700,
+                  color: Color(0xFF2D6A4F),
+                ),
+              ),
+            ],
           ),
-          SizedBox(height: 6),
-          Text('Personalized skills to learn will appear here.'),
+          const SizedBox(height: 10),
+          const Text(
+            "Identify skill gaps and upskill suggestions for your targeted roles.",
+            style: TextStyle(
+              fontSize: 15.5,
+              color: Color(0xFF40916C),
+              fontWeight: FontWeight.w400,
+            ),
+          ),
+          const SizedBox(height: 25),
+
+          // Your profile current skills chips
+          const Text(
+            "Current Skills:",
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w600,
+              color: Color(0xFF2D6A4F),
+            ),
+          ),
+          const SizedBox(height: 4),
+          Wrap(
+            spacing: 6,
+            children: [
+              ...currentSkills.map(
+                (skill) => Chip(
+                  label: Text(
+                    skill,
+                    style: const TextStyle(
+                      fontSize: 13.1,
+                      fontWeight: FontWeight.w500,
+                      color: Color(0xFF2D6A4F),
+                    ),
+                  ),
+                  backgroundColor: chipBg,
+                  padding: EdgeInsets.zero,
+                  visualDensity: VisualDensity.compact,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(7),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 22),
+
+          // Skill gap analysis headline
+          const Text(
+            "Recommended Skills to Upskill:",
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w600,
+              color: Color(0xFF40916C),
+            ),
+          ),
+          const SizedBox(height: 7),
+
+          // For each recommended skill, show visual tag for importance (color-coding) and explanation
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: suggestedSkills.map((item) {
+              Color badgeColor;
+              switch (item["importance"]) {
+                case "High":
+                  badgeColor = accent;
+                  break;
+                case "Medium":
+                  badgeColor = chipBg;
+                  break;
+                default:
+                  badgeColor = Colors.grey.shade300;
+              }
+              return Card(
+                elevation: 1.5,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(9),
+                ),
+                margin: const EdgeInsets.symmetric(vertical: 4),
+                child: ListTile(
+                  leading: Icon(Icons.check_circle_outline,
+                      color: badgeColor == accent ? primary : Color(0xFF40916C), size: 26),
+                  title: Row(
+                    children: [
+                      Text(
+                        item["skill"],
+                        style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 15.3),
+                      ),
+                      const SizedBox(width: 8),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2.5),
+                        decoration: BoxDecoration(
+                          color: badgeColor,
+                          borderRadius: BorderRadius.circular(6),
+                        ),
+                        child: Text(
+                          item["importance"],
+                          style: TextStyle(
+                            fontWeight: FontWeight.w700,
+                            color:
+                                (badgeColor == accent) ? primary : Color(0xFF40916C),
+                            fontSize: 11.5,
+                            letterSpacing: 0.1,
+                          ),
+                        ),
+                      )
+                    ],
+                  ),
+                  subtitle: Padding(
+                    padding: const EdgeInsets.only(top: 2.0, bottom: 3),
+                    child: Text(
+                      item["reason"],
+                      style: const TextStyle(
+                        fontWeight: FontWeight.w400,
+                        fontSize: 13.1,
+                        color: Colors.black87,
+                      ),
+                    ),
+                  ),
+                ),
+              );
+            }).toList(),
+          ),
+          const SizedBox(height: 14),
+          // Call to action
+          Container(
+            margin: const EdgeInsets.symmetric(vertical: 2),
+            padding: const EdgeInsets.symmetric(horizontal: 13, vertical: 10),
+            decoration: BoxDecoration(
+              color: accent.withOpacity(0.18),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Row(
+              children: const [
+                Icon(Icons.school, color: Color(0xFF2D6A4F), size: 22),
+                SizedBox(width: 9),
+                Expanded(
+                  child: Text(
+                    "Upskill to unlock more personalized job matches and boost your job prospects!",
+                    style: TextStyle(
+                      color: Color(0xFF2D6A4F),
+                      fontWeight: FontWeight.w600,
+                      fontSize: 14,
+                      letterSpacing: 0.01,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
         ],
       ),
     );
