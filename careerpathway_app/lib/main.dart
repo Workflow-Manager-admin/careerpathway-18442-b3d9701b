@@ -353,42 +353,225 @@ class _PersonalizedJobListSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // PUBLIC_INTERFACE
+    // Placeholder profile and job matching
+    final List<Map<String, dynamic>> matchedJobs = [
+      {
+        "title": "Flutter Developer",
+        "company": "TechNova",
+        "location": "Remote • US",
+        "skills": ["Dart", "Flutter", "REST APIs"],
+        "logo": Icons.phone_android,
+        "badge": "Best Match",
+        "jobType": "Full Time"
+      },
+      {
+        "title": "Frontend Engineer",
+        "company": "InnoSoft Inc.",
+        "location": "New York, NY",
+        "skills": ["React", "UI/UX", "JavaScript"],
+        "logo": Icons.web,
+        "badge": "New",
+        "jobType": "Hybrid"
+      },
+      {
+        "title": "Junior Data Analyst",
+        "company": "Analytiq Systems",
+        "location": "San Francisco, CA",
+        "skills": ["SQL", "Python", "Excel"],
+        "logo": Icons.bar_chart,
+        "badge": null,
+        "jobType": "Entry Level"
+      },
+      {
+        "title": "Mobile App QA Tester",
+        "company": "QualityFirst",
+        "location": "Austin, TX",
+        "skills": ["Testing", "Flutter", "Mobile"],
+        "logo": Icons.bug_report,
+        "badge": "Trending",
+        "jobType": "Contract"
+      }
+    ];
+
     return Padding(
       padding: const EdgeInsets.all(20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            'Personalized Job List',
-            style: TextStyle(
-              fontSize: 22,
-              fontWeight: FontWeight.w700,
-              color: Color(0xFF2D6A4F),
-            ),
-          ),
-          const SizedBox(height: 14),
-          // Placeholder for jobs
-          Expanded(
-            child: ListView.separated(
-              itemCount: 5,
-              separatorBuilder: (_, __) => const SizedBox(height: 12),
-              itemBuilder: (context, idx) => Card(
-                elevation: 2,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: ListTile(
-                  leading: const Icon(Icons.business_center, color: Color(0xFF40916C)),
-                  title: Text('Job Title #${idx + 1}'),
-                  subtitle: const Text('Company Name • Location'),
-                  trailing: Icon(Icons.arrow_forward_ios_rounded,
-                      size: 16, color: Color(0xFF2D6A4F)),
-                  onTap: () {
-                    // TODO: navigate to job details
-                  },
+          // Section Header
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: const [
+              Icon(Icons.business_center, color: Color(0xFF40916C), size: 28),
+              SizedBox(width: 7),
+              Text(
+                'Personalized Job Matching',
+                style: TextStyle(
+                  fontSize: 22,
+                  fontWeight: FontWeight.w700,
+                  color: Color(0xFF2D6A4F),
                 ),
               ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          const Text(
+            "Jobs matched for you, based on your current profile.",
+            style: TextStyle(
+              fontSize: 15,
+              color: Color(0xFF40916C),
+              fontWeight: FontWeight.w400,
             ),
+          ),
+          const SizedBox(height: 16),
+          // Matched jobs list
+          Expanded(
+            child: matchedJobs.isEmpty
+                ? Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: const [
+                        Icon(Icons.work_off_outlined, size: 50, color: Color(0xFF40916C)),
+                        SizedBox(height: 16),
+                        Text(
+                          "No jobs matched yet.",
+                          style: TextStyle(
+                            fontSize: 17,
+                            color: Color(0xFF2D6A4F),
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                        SizedBox(height: 6),
+                        Text(
+                          "Update your profile to get recommended jobs.",
+                          style: TextStyle(fontSize: 14, color: Colors.black54),
+                        )
+                      ],
+                    ),
+                  )
+                : ListView.separated(
+                    itemCount: matchedJobs.length,
+                    separatorBuilder: (_, __) => const SizedBox(height: 14),
+                    itemBuilder: (context, idx) {
+                      final j = matchedJobs[idx];
+                      return Card(
+                        elevation: 3,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: Stack(
+                          children: [
+                            ListTile(
+                              leading: CircleAvatar(
+                                radius: 22,
+                                backgroundColor: const Color(0xFF2D6A4F).withOpacity(0.11),
+                                child: Icon(j["logo"], color: const Color(0xFF40916C), size: 28),
+                              ),
+                              title: Row(
+                                children: [
+                                  Text(
+                                    j["title"],
+                                    style: const TextStyle(
+                                        fontWeight: FontWeight.w600, fontSize: 17),
+                                  ),
+                                  if (j["badge"] != null) ...[
+                                    const SizedBox(width: 7),
+                                    Container(
+                                      padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2.5),
+                                      decoration: BoxDecoration(
+                                        color: Color(0xFFFFD166),
+                                        borderRadius: BorderRadius.circular(6),
+                                      ),
+                                      child: Text(
+                                        j["badge"].toString(),
+                                        style: const TextStyle(
+                                          fontWeight: FontWeight.w700,
+                                          color: Color(0xFF2D6A4F),
+                                          fontSize: 11,
+                                          letterSpacing: 0.2,
+                                        ),
+                                      ),
+                                    )
+                                  ]
+                                ],
+                              ),
+                              subtitle: Padding(
+                                padding: const EdgeInsets.only(top: 2.0),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Row(
+                                      children: [
+                                        Text(
+                                          j["company"],
+                                          style: const TextStyle(
+                                            color: Color(0xFF40916C),
+                                            fontWeight: FontWeight.w500,
+                                            fontSize: 14,
+                                          ),
+                                        ),
+                                        const SizedBox(width: 5),
+                                        Text(
+                                          '• ${j["location"]}',
+                                          style: const TextStyle(
+                                            fontSize: 13,
+                                            color: Colors.black54,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    const SizedBox(height: 4),
+                                    Wrap(
+                                      spacing: 6,
+                                      children: [
+                                        ...j["skills"].map<Widget>((skill) => Chip(
+                                          label: Text(
+                                            skill,
+                                            style: const TextStyle(
+                                              fontSize: 12,
+                                              fontWeight: FontWeight.w500,
+                                              color: Color(0xFF2D6A4F),
+                                            ),
+                                          ),
+                                          padding: EdgeInsets.zero,
+                                          backgroundColor: const Color(0xFF40916C).withOpacity(0.13),
+                                          materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                          visualDensity: VisualDensity.compact,
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(7),
+                                          ),
+                                        )),
+                                        Container(
+                                          padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
+                                          decoration: BoxDecoration(
+                                            color: Color(0xFF2D6A4F).withOpacity(0.10),
+                                            borderRadius: BorderRadius.circular(6),
+                                          ),
+                                          child: Text(
+                                            j["jobType"],
+                                            style: const TextStyle(
+                                              color: Color(0xFF40916C),
+                                              fontSize: 11.6,
+                                              fontWeight: FontWeight.w600,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    )
+                                  ],
+                                ),
+                              ),
+                              trailing: Icon(Icons.arrow_forward_ios_rounded,
+                                  size: 18, color: Color(0xFF2D6A4F)),
+                              onTap: () {
+                                // TODO: navigate to job details
+                              },
+                            ),
+                          ],
+                        ),
+                      );
+                    },
+                  ),
           ),
         ],
       ),
