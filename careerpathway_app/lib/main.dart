@@ -478,23 +478,265 @@ class _SkillRecommendationsSection extends StatelessWidget {
   }
 }
 
-class _ProfileUpdateSection extends StatelessWidget {
+class _ProfileUpdateSection extends StatefulWidget {
+  @override
+  State<_ProfileUpdateSection> createState() => _ProfileUpdateSectionState();
+}
+
+class _ProfileUpdateSectionState extends State<_ProfileUpdateSection> {
+  // Controllers for user input fields
+  final _formKey = GlobalKey<FormState>();
+
+  final TextEditingController _fullNameController = TextEditingController();
+  final TextEditingController _headlineController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _phoneController = TextEditingController();
+
+  // Experience & Skills
+  final TextEditingController _experienceController = TextEditingController();
+  final TextEditingController _skillsController = TextEditingController();
+
+  // Preferences
+  String? _preferredLocation;
+  String? _jobType;
+  bool _remoteOk = false;
+
+  // "Saved" UI feedback
+  bool _showSavedSnack = false;
+
+  // PUBLIC_INTERFACE
   @override
   Widget build(BuildContext context) {
-    // PUBLIC_INTERFACE
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: const [
-          Icon(Icons.person, size: 44, color: Color(0xFF40916C)),
-          SizedBox(height: 10),
-          Text(
-            'Profile & Skill Updates',
-            style: TextStyle(fontSize: 21, fontWeight: FontWeight.w600),
+    final theme = Theme.of(context);
+    final Color primary = const Color(0xFF2D6A4F);
+    final Color accent = const Color(0xFFFFD166);
+
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(30.0),
+      child: Center(
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 650),
+          child: Card(
+            elevation: 2.4,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 22),
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Section header & icon
+                    Row(
+                      children: const [
+                        Icon(Icons.person, size: 34, color: Color(0xFF40916C)),
+                        SizedBox(width: 9),
+                        Text(
+                          "Profile Builder",
+                          style: TextStyle(fontSize: 23, fontWeight: FontWeight.w700, color: Color(0xFF2D6A4F)),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    const Text(
+                      "Add your personal details, experience and preferences to boost your job matches.",
+                      style: TextStyle(fontSize: 15.3, color: Color(0xFF40916C), fontWeight: FontWeight.w400),
+                    ),
+                    const Divider(height: 32),
+                    // Profile (Personal Details)
+                    Text("Personal Details", style: theme.textTheme.titleMedium?.copyWith(color: primary, fontWeight: FontWeight.bold)),
+                    const SizedBox(height: 10),
+                    TextFormField(
+                      controller: _fullNameController,
+                      decoration: const InputDecoration(
+                        labelText: "Full Name",
+                        icon: Icon(Icons.badge_outlined, color: Color(0xFF40916C)),
+                        border: OutlineInputBorder(),
+                        floatingLabelStyle: TextStyle(color: Color(0xFF2D6A4F)),
+                      ),
+                      validator: (v) => (v == null || v.trim().isEmpty) ? "Enter your name" : null,
+                    ),
+                    const SizedBox(height: 12),
+                    TextFormField(
+                      controller: _headlineController,
+                      decoration: const InputDecoration(
+                        labelText: "Headline (e.g. Flutter Developer, Data Analyst)",
+                        icon: Icon(Icons.work_outline_rounded, color: Color(0xFF40916C)),
+                        border: OutlineInputBorder(),
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: TextFormField(
+                            controller: _emailController,
+                            decoration: const InputDecoration(
+                              labelText: "Email",
+                              icon: Icon(Icons.email_outlined, color: Color(0xFF40916C)),
+                              border: OutlineInputBorder(),
+                            ),
+                            validator: (v) =>
+                                (v == null || v.trim().isEmpty || !v.contains('@')) ? "Enter valid email" : null,
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: TextFormField(
+                            controller: _phoneController,
+                            decoration: const InputDecoration(
+                              labelText: "Phone",
+                              icon: Icon(Icons.phone_outlined, color: Color(0xFF40916C)),
+                              border: OutlineInputBorder(),
+                            ),
+                            keyboardType: TextInputType.phone,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 22),
+
+                    // Experience
+                    Text("Experience", style: theme.textTheme.titleMedium?.copyWith(color: primary, fontWeight: FontWeight.bold)),
+                    const SizedBox(height: 10),
+                    TextFormField(
+                      controller: _experienceController,
+                      decoration: const InputDecoration(
+                        labelText: "Relevant Experience (e.g. 3 years at Company Y)",
+                        icon: Icon(Icons.calendar_month_outlined, color: Color(0xFF40916C)),
+                        border: OutlineInputBorder(),
+                        hintText: "List time period and brief description",
+                      ),
+                      maxLines: 2,
+                    ),
+                    const SizedBox(height: 12),
+                    TextFormField(
+                      controller: _skillsController,
+                      decoration: const InputDecoration(
+                        labelText: "Skills (comma separated)",
+                        icon: Icon(Icons.memory_outlined, color: Color(0xFF40916C)),
+                        border: OutlineInputBorder(),
+                        hintText: "e.g. Dart, Flutter, REST APIs",
+                      ),
+                    ),
+                    const SizedBox(height: 22),
+
+                    // Preferences
+                    Text("Job Preferences", style: theme.textTheme.titleMedium?.copyWith(color: primary, fontWeight: FontWeight.bold)),
+                    const SizedBox(height: 10),
+                    DropdownButtonFormField<String>(
+                      value: _preferredLocation,
+                      items: [
+                        for (String loc in ['Any', 'Remote', 'On-site', 'Hybrid']) DropdownMenuItem(value: loc, child: Text(loc)),
+                      ],
+                      decoration: const InputDecoration(
+                        labelText: "Preferred Location",
+                        icon: Icon(Icons.location_on_outlined, color: Color(0xFF40916C)),
+                        border: OutlineInputBorder(),
+                      ),
+                      onChanged: (v) => setState(() => _preferredLocation = v),
+                    ),
+                    const SizedBox(height: 12),
+                    DropdownButtonFormField<String>(
+                      value: _jobType,
+                      items: [
+                        for (String jt in ['Any', 'Full Time', 'Part Time', 'Internship', 'Contract'])
+                          DropdownMenuItem(value: jt, child: Text(jt)),
+                      ],
+                      decoration: const InputDecoration(
+                        labelText: "Job Type",
+                        icon: Icon(Icons.work_history_outlined, color: Color(0xFF40916C)),
+                        border: OutlineInputBorder(),
+                      ),
+                      onChanged: (v) => setState(() => _jobType = v),
+                    ),
+                    const SizedBox(height: 10),
+                    CheckboxListTile(
+                      value: _remoteOk,
+                      onChanged: (v) => setState(() => _remoteOk = v ?? false),
+                      title: const Text("Open to Remote Roles"),
+                      controlAffinity: ListTileControlAffinity.leading,
+                      activeColor: accent,
+                      contentPadding: EdgeInsets.zero,
+                    ),
+                    const Divider(height: 24),
+
+                    // Action buttons
+                    Row(
+                      children: [
+                        ElevatedButton.icon(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: primary,
+                            foregroundColor: Colors.white,
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                            textStyle: const TextStyle(fontWeight: FontWeight.w600, fontSize: 15.5),
+                          ),
+                          icon: const Icon(Icons.save_alt),
+                          label: const Text("Save"),
+                          onPressed: () {
+                            if (_formKey.currentState?.validate() ?? false) {
+                              setState(() {
+                                _showSavedSnack = true;
+                              });
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Row(
+                                    children: const [
+                                      Icon(Icons.check_circle, color: Color(0xFF40916C)),
+                                      SizedBox(width: 9),
+                                      Text("Profile information saved! (UI only)"),
+                                    ],
+                                  ),
+                                  duration: const Duration(seconds: 2),
+                                  backgroundColor: accent.withOpacity(0.97),
+                                ),
+                              );
+                            }
+                          },
+                        ),
+                        const SizedBox(width: 19),
+                        OutlinedButton.icon(
+                          icon: const Icon(Icons.refresh, color: Color(0xFF40916C)),
+                          label: const Text("Clear"),
+                          style: OutlinedButton.styleFrom(
+                            foregroundColor: primary,
+                            side: BorderSide(color: accent),
+                            textStyle: const TextStyle(fontWeight: FontWeight.w500),
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                          ),
+                          onPressed: () {
+                            setState(() {
+                              _fullNameController.clear();
+                              _headlineController.clear();
+                              _emailController.clear();
+                              _phoneController.clear();
+                              _experienceController.clear();
+                              _skillsController.clear();
+                              _preferredLocation = null;
+                              _jobType = null;
+                              _remoteOk = false;
+                              _showSavedSnack = false;
+                            });
+                          },
+                        ),
+                      ],
+                    ),
+                    if (_showSavedSnack) ...[
+                      const SizedBox(height: 12),
+                      Row(
+                        children: [
+                          Icon(Icons.check_circle_outline, color: accent, size: 22),
+                          const SizedBox(width: 7),
+                          const Text("Saved (not persisted yet)", style: TextStyle(color: Color(0xFF40916C), fontSize: 13.5)),
+                        ],
+                      )
+                    ]
+                  ],
+                ),
+              ),
+            ),
           ),
-          SizedBox(height: 6),
-          Text('Update your profile and skill details here.'),
-        ],
+        ),
       ),
     );
   }
