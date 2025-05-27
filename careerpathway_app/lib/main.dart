@@ -743,25 +743,13 @@ class _ProfileUpdateSectionState extends State<_ProfileUpdateSection> {
   }
 }
 
+import 'interview_prep_section.dart';
+
 class _InterviewPrepSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // PUBLIC_INTERFACE
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: const [
-          Icon(Icons.record_voice_over, size: 44, color: Color(0xFFFFD166)),
-          SizedBox(height: 10),
-          Text(
-            'Interview Preparation',
-            style: TextStyle(fontSize: 21, fontWeight: FontWeight.w600),
-          ),
-          SizedBox(height: 6),
-          Text('AI-powered mock interview tools coming soon.'),
-        ],
-      ),
-    );
+    return InterviewPrepSection();
   }
 }
 
