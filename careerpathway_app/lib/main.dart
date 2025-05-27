@@ -61,7 +61,8 @@ class _CareerPathwayDashboardState extends State<CareerPathwayDashboard> {
     'Profile & Updates',
     'Interview Prep',
     'Career Pathing',
-    'Resume Optimizer'
+    'Resume Optimizer',
+    'Applications'
   ];
 
   // Placeholder method for sidebar navigation
@@ -224,7 +225,7 @@ class _CareerPathwayDashboardState extends State<CareerPathwayDashboard> {
 
   // PUBLIC_INTERFACE
   Widget _buildDashboardMainContent(BuildContext context) {
-    // Placeholder widgets representing dashboard features for initial scaffolding.
+    // Decide which dashboard feature section to show based on sidebar
     switch (_selectedSidebarIndex) {
       case 0:
         return _SkillRecommendationsSection();
@@ -236,8 +237,9 @@ class _CareerPathwayDashboardState extends State<CareerPathwayDashboard> {
         return _CareerPathingSection();
       case 4:
         return const ResumeCoverLetterOptimizerSection();
+      case 5:
+        return const ApplicationTrackingSection();
       default:
-        // Personalized Job List is always shown on main dashboard
         return _PersonalizedJobListSection();
     }
   }
