@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'resume_optimizer_section.dart';
+import 'application_tracking_section.dart';
 
 // PUBLIC_INTERFACE
 void main() {
