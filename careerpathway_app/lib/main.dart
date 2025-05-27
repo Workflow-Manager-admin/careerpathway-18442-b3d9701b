@@ -787,6 +787,259 @@ class _PersonalizedJobListSection extends StatelessWidget {
     // PUBLIC_INTERFACE
     // Placeholder profile and job matching
     final List<Map<String, dynamic>> matchedJobs = [
+
+// PUBLIC_INTERFACE
+/// Job Alerts/Notifications Icon with Dropdown
+class NotificationBellDropdown extends StatefulWidget {
+  const NotificationBellDropdown({Key? key}) : super(key: key);
+
+  @override
+  State<NotificationBellDropdown> createState() => _NotificationBellDropdownState();
+}
+
+class _NotificationBellDropdownState extends State<NotificationBellDropdown> {
+  // Placeholder/mock notifications for jobs
+  List<Map<String, dynamic>> notifications = [
+    {
+      "title": "New job: Flutter Developer",
+      "subtitle": "TechNova • Remote",
+      "time": "Just now",
+      "isRead": false
+    },
+    {
+      "title": "3 new matches based on your profile",
+      "subtitle": "See recommended jobs",
+      "time": "7min ago",
+      "isRead": false
+    },
+    {
+      "title": "Skill Matched: Unit Testing",
+      "subtitle": "Boosts your job fit!",
+      "time": "1h ago",
+      "isRead": true
+    },
+    {
+      "title": "Job Application Deadline Today",
+      "subtitle": "Frontend Engineer at InnoSoft Inc.",
+      "time": "2h ago",
+      "isRead": true
+    }
+  ];
+
+  bool showMenu = false;
+
+  @override
+  Widget build(BuildContext context) {
+    // Pill badge with number for unread
+    int unread = notifications.where((n) => n["isRead"] == false).length;
+    final theme = Theme.of(context);
+    final Color bellColor = unread > 0 ? const Color(0xFFFFD166) : Colors.white;
+
+    return Stack(
+      alignment: Alignment.topRight,
+      children: [
+        IconButton(
+          icon: Icon(Icons.notifications_active_outlined, color: bellColor),
+          tooltip: "Job Alerts & Notifications",
+          onPressed: () {
+            setState(() {
+              showMenu = true;
+            });
+            // Show a styled dropdown Overlay or Dialog for the notifications
+            showDialog(
+              context: context,
+              builder: (_) => JobAlertNotificationDialog(
+                notifications: notifications,
+                onMarkAllRead: () {
+                  setState(() {
+                    for (final n in notifications) {
+                      n["isRead"] = true;
+                    }
+                  });
+                  Navigator.pop(context);
+                },
+                onClose: () {
+                  Navigator.pop(context);
+                },
+                onDeleteOne: (idx) {
+                  setState(() {
+                    notifications.removeAt(idx);
+                  });
+                },
+              ),
+            ).then((_) {
+              setState(() {
+                showMenu = false;
+              });
+            });
+          },
+        ),
+        if (unread > 0)
+          Positioned(
+            right: 10,
+            top: 8,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
+              decoration: BoxDecoration(
+                color: const Color(0xFFFFD166),
+                shape: BoxShape.rectangle,
+                borderRadius: BorderRadius.circular(11),
+              ),
+              child: Text(
+                "$unread",
+                style: const TextStyle(
+                  color: Color(0xFF2D6A4F),
+                  fontWeight: FontWeight.w700,
+                  fontSize: 12
+                ),
+              ),
+            ),
+          ),
+      ],
+    );
+  }
+}
+
+// PUBLIC_INTERFACE
+/// Notifications dialog with styling for job alerts
+class JobAlertNotificationDialog extends StatelessWidget {
+  final List<Map<String, dynamic>> notifications;
+  final VoidCallback onMarkAllRead;
+  final VoidCallback onClose;
+  final Function(int idx) onDeleteOne;
+
+  const JobAlertNotificationDialog({
+    super.key,
+    required this.notifications,
+    required this.onMarkAllRead,
+    required this.onClose,
+    required this.onDeleteOne,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final Color primary = const Color(0xFF2D6A4F);
+    final Color accent = const Color(0xFFFFD166);
+
+    return Dialog(
+      insetPadding: const EdgeInsets.only(top: 55, right: 17),
+      alignment: Alignment.topRight,
+      elevation: 8,
+      backgroundColor: Colors.white,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(14),
+      ),
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 345, maxHeight: 440),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Header
+            Padding(
+              padding: const EdgeInsets.only(left: 19, top: 16, right: 7, bottom: 6),
+              child: Row(
+                children: [
+                  const Icon(Icons.notifications_active, color: Color(0xFF2D6A4F), size: 24),
+                  const SizedBox(width: 7),
+                  const Text(
+                    "Job Alerts & Notifications",
+                    style: TextStyle(fontSize: 17.3, fontWeight: FontWeight.w700, color: Color(0xFF2D6A4F)),
+                  ),
+                  const Spacer(),
+                  IconButton(
+                    icon: const Icon(Icons.close, size: 22, color: Colors.black54),
+                    tooltip: "Close",
+                    onPressed: onClose,
+                  )
+                ],
+              ),
+            ),
+            const Divider(height: 0, thickness: 1, color: Color(0xFF40916C)),
+            if (notifications.isEmpty)
+              const Padding(
+                padding: EdgeInsets.symmetric(vertical: 30),
+                child: Center(child: Text("No new notifications.", style: TextStyle(color: Colors.black54))),
+              )
+            else
+              Expanded(
+                child: ListView.separated(
+                  padding: const EdgeInsets.symmetric(vertical: 11, horizontal: 6),
+                  separatorBuilder: (_, __) => const Divider(height: 0),
+                  itemCount: notifications.length,
+                  itemBuilder: (context, idx) {
+                    final n = notifications[idx];
+                    return ListTile(
+                      contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 7),
+                      leading: Icon(
+                        n["isRead"] ? Icons.mark_email_read_outlined : Icons.mark_email_unread_outlined,
+                        color: n["isRead"] ? Colors.grey.shade400 : accent,
+                        size: 28,
+                      ),
+                      title: Text(
+                        n["title"],
+                        style: TextStyle(
+                          fontWeight: n["isRead"] ? FontWeight.w500 : FontWeight.w700,
+                          color: n["isRead"] ? primary.withOpacity(0.63) : primary,
+                          fontSize: 15.1,
+                        ),
+                      ),
+                      subtitle: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          if (n["subtitle"] != null) ...[
+                            Text(
+                              n["subtitle"]!,
+                              style: TextStyle(
+                                color: n["isRead"] ? Colors.black54 : Color(0xFF40916C),
+                                fontSize: 13.2,
+                              ),
+                            ),
+                            const SizedBox(height: 1)
+                          ],
+                          Text(
+                            n["time"] ?? "",
+                            style: const TextStyle(color: Colors.black38, fontSize: 11.2),
+                          ),
+                        ],
+                      ),
+                      trailing: IconButton(
+                        icon: const Icon(Icons.delete_outline, size: 20, color: Colors.redAccent),
+                        tooltip: "Delete notification",
+                        onPressed: () => onDeleteOne(idx),
+                      ),
+                    );
+                  },
+                ),
+              ),
+            // Footer actions
+            if (notifications.isNotEmpty)
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 11, vertical: 7),
+                child: Row(
+                  children: [
+                    ElevatedButton.icon(
+                      icon: const Icon(Icons.done_all, size: 19),
+                      label: const Text("Mark All as Read", style: TextStyle(fontSize: 13.5)),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: accent,
+                        foregroundColor: primary,
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(7)),
+                      ),
+                      onPressed: onMarkAllRead,
+                    ),
+                    const Spacer(),
+                  ],
+                ),
+              ),
+            const SizedBox(height: 7),
+          ],
+        ),
+      ),
+    );
+  }
+}
       {
         "title": "Flutter Developer",
         "company": "TechNova",
