@@ -249,6 +249,8 @@ class _CareerPathwayDashboardState extends State<CareerPathwayDashboard> {
         return const Icon(Icons.record_voice_over, color: Color(0xFFFFD166));
       case 3:
         return const Icon(Icons.trending_up, color: Color(0xFF2D6A4F));
+      case 4:
+        return const Icon(Icons.auto_fix_high_outlined, color: Color(0xFFFFD166));
       default:
         return const Icon(Icons.dashboard_customize_outlined);
     }
