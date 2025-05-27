@@ -1,54 +1,396 @@
 import 'package:flutter/material.dart';
 
+// PUBLIC_INTERFACE
 void main() {
-  runApp(const MyApp());
+  runApp(const CareerPathwayApp());
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+// PUBLIC_INTERFACE
+class CareerPathwayApp extends StatelessWidget {
+  const CareerPathwayApp({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'AI Build Tool',
+      title: 'CareerPathway',
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
+        colorScheme: ColorScheme(
+          brightness: Brightness.light,
+          primary: const Color(0xFF2D6A4F), // Deep green
+          onPrimary: Colors.white,
+          secondary: const Color(0xFF40916C), // Soft green
+          onSecondary: Colors.white,
+          error: Colors.red,
+          onError: Colors.white,
+          background: Colors.white,
+          onBackground: Colors.black87,
+          surface: Colors.white,
+          onSurface: Colors.black87,
+        ),
         useMaterial3: true,
+        // Accent color for FloatingActionButtons, etc.
+        floatingActionButtonTheme: const FloatingActionButtonThemeData(
+          backgroundColor: Color(0xFFFFD166), // Accent yellow
+        ),
+        appBarTheme: const AppBarTheme(
+          backgroundColor: Color(0xFF2D6A4F),
+          foregroundColor: Colors.white,
+        ),
       ),
-      home: const MyHomePage(title: 'careerpathway_app'),
+      home: const CareerPathwayDashboard(),
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-
-  final String title;
+// PUBLIC_INTERFACE
+class CareerPathwayDashboard extends StatefulWidget {
+  const CareerPathwayDashboard({super.key});
 
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  State<CareerPathwayDashboard> createState() => _CareerPathwayDashboardState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+class _CareerPathwayDashboardState extends State<CareerPathwayDashboard> {
+  int _selectedSidebarIndex = 0;
+
+  // List of main dashboard sections represented in sidebar
+  final List<String> _sidebarSections = [
+    'Recommended Skills',
+    'Profile & Updates',
+    'Interview Prep',
+    'Career Pathing'
+  ];
+
+  // Placeholder method for sidebar navigation
+  void _onSidebarSelect(int index) {
+    setState(() {
+      _selectedSidebarIndex = index;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
+    // Responsive layout: Consider mobile device but show sidebar (Drawer)
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text(widget.title),
-      ),
-      body: const Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Text(
-              'careerpathway_app App is being generated...',
-              style: TextStyle(fontSize: 18),
+        title: const Text(
+          'CareerPathway',
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 22,
+            letterSpacing: 1.2,
+          ),
+        ),
+        backgroundColor: Theme.of(context).colorScheme.primary,
+        actions: [
+          // Notifications Icon
+          IconButton(
+            icon: const Icon(Icons.notifications_active_outlined),
+            tooltip: "Job Alerts & Notifications",
+            onPressed: () {
+              // TODO: handle notifications
+            },
+          ),
+          // Profile Avatar/Settings
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8.0),
+            child: GestureDetector(
+              onTap: () {
+                // TODO: handle profile navigation
+              },
+              child: const CircleAvatar(
+                backgroundColor: Color(0xFF40916C),
+                child: Icon(Icons.person, color: Colors.white),
+              ),
             ),
-            SizedBox(height: 20),
-            CircularProgressIndicator(),
+          ),
+        ],
+      ),
+      drawer: Drawer(
+        child: ListView(
+          children: [
+            DrawerHeader(
+              decoration: const BoxDecoration(
+                color: Color(0xFF2D6A4F),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: const [
+                  Text(
+                    'Dashboard Menu',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 20,
+                      letterSpacing: 1.1,
+                    ),
+                  ),
+                  SizedBox(height: 8),
+                  Text(
+                    'Navigate career features',
+                    style: TextStyle(color: Colors.white70, fontSize: 14),
+                  )
+                ],
+              ),
+            ),
+            // Sidebar options
+            for (int i = 0; i < _sidebarSections.length; i++)
+              ListTile(
+                leading: _getSidebarIcon(i),
+                title: Text(_sidebarSections[i]),
+                selected: i == _selectedSidebarIndex,
+                selectedTileColor: const Color(0xFF40916C).withOpacity(0.08),
+                onTap: () {
+                  Navigator.pop(context);
+                  _onSidebarSelect(i);
+                },
+              )
           ],
         ),
+      ),
+      body: SafeArea(
+        child: Column(
+          children: [
+            // Prominent Search Bar
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+              child: Material(
+                elevation: 1,
+                borderRadius: BorderRadius.circular(10),
+                child: TextField(
+                  decoration: InputDecoration(
+                    prefixIcon: const Icon(Icons.search, color: Color(0xFF2D6A4F)),
+                    hintText: 'Search for jobs, skills, or companies',
+                    contentPadding: const EdgeInsets.symmetric(vertical: 16),
+                    filled: true,
+                    fillColor: Colors.white,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: BorderSide.none,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            // Main dashboard area: Job List and Sidebar
+            Expanded(
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Sidebar on wide layouts (hidden on mobile, only Drawer used)
+                  // For demo: Only show when width >550, else mobile flows naturally
+                  LayoutBuilder(builder: (context, constraints) {
+                    if (constraints.maxWidth > 550) {
+                      return Container(
+                        width: 220,
+                        color: const Color(0xFF2D6A4F).withOpacity(0.04),
+                        child: Column(
+                          children: [
+                            for (int i = 0; i < _sidebarSections.length; i++)
+                              ListTile(
+                                leading: _getSidebarIcon(i),
+                                title: Text(_sidebarSections[i]),
+                                selected: i == _selectedSidebarIndex,
+                                selectedTileColor: const Color(0xFF40916C).withOpacity(0.09),
+                                onTap: () => _onSidebarSelect(i),
+                              )
+                          ],
+                        ),
+                      );
+                    } else {
+                      return const SizedBox.shrink();
+                    }
+                  }),
+                  // Main Content Area
+                  Expanded(
+                    child: _buildDashboardMainContent(context),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+      floatingActionButton: FloatingActionButton.extended(
+        backgroundColor: const Color(0xFFFFD166), // Accent
+        foregroundColor: Colors.black87,
+        icon: const Icon(Icons.person_add_alt_1),
+        label: const Text('Update Profile/Skills'),
+        onPressed: () {
+          // TODO: Implement profile/skill update UX
+        },
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+    );
+  }
+
+  // PUBLIC_INTERFACE
+  Widget _buildDashboardMainContent(BuildContext context) {
+    // Placeholder widgets representing dashboard features for initial scaffolding.
+    switch (_selectedSidebarIndex) {
+      case 0:
+        return _SkillRecommendationsSection();
+      case 1:
+        return _ProfileUpdateSection();
+      case 2:
+        return _InterviewPrepSection();
+      case 3:
+        return _CareerPathingSection();
+      default:
+        // Personalized Job List is always shown on main dashboard
+        return _PersonalizedJobListSection();
+    }
+  }
+
+  Icon _getSidebarIcon(int index) {
+    switch (index) {
+      case 0:
+        return const Icon(Icons.star_outline, color: Color(0xFF2D6A4F));
+      case 1:
+        return const Icon(Icons.person_outline, color: Color(0xFF40916C));
+      case 2:
+        return const Icon(Icons.record_voice_over, color: Color(0xFFFFD166));
+      case 3:
+        return const Icon(Icons.trending_up, color: Color(0xFF2D6A4F));
+      default:
+        return const Icon(Icons.dashboard_customize_outlined);
+    }
+  }
+}
+
+// Placeholder section widgets for dashboard scaffolding
+
+class _SkillRecommendationsSection extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    // PUBLIC_INTERFACE
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: const [
+          Icon(Icons.star, size: 48, color: Color(0xFF2D6A4F)),
+          SizedBox(height: 10),
+          Text(
+            'Skill Recommendations',
+            style: TextStyle(fontSize: 22, fontWeight: FontWeight.w600),
+          ),
+          SizedBox(height: 6),
+          Text('Personalized skills to learn will appear here.'),
+        ],
+      ),
+    );
+  }
+}
+
+class _ProfileUpdateSection extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    // PUBLIC_INTERFACE
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: const [
+          Icon(Icons.person, size: 44, color: Color(0xFF40916C)),
+          SizedBox(height: 10),
+          Text(
+            'Profile & Skill Updates',
+            style: TextStyle(fontSize: 21, fontWeight: FontWeight.w600),
+          ),
+          SizedBox(height: 6),
+          Text('Update your profile and skill details here.'),
+        ],
+      ),
+    );
+  }
+}
+
+class _InterviewPrepSection extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    // PUBLIC_INTERFACE
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: const [
+          Icon(Icons.record_voice_over, size: 44, color: Color(0xFFFFD166)),
+          SizedBox(height: 10),
+          Text(
+            'Interview Preparation',
+            style: TextStyle(fontSize: 21, fontWeight: FontWeight.w600),
+          ),
+          SizedBox(height: 6),
+          Text('AI-powered mock interview tools coming soon.'),
+        ],
+      ),
+    );
+  }
+}
+
+class _CareerPathingSection extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    // PUBLIC_INTERFACE
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: const [
+          Icon(Icons.trending_up, size: 44, color: Color(0xFF2D6A4F)),
+          SizedBox(height: 10),
+          Text(
+            'Career Pathing & Insights',
+            style: TextStyle(fontSize: 21, fontWeight: FontWeight.w600),
+          ),
+          SizedBox(height: 6),
+          Text('Explore future growth and career suggestions.'),
+        ],
+      ),
+    );
+  }
+}
+
+class _PersonalizedJobListSection extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    // PUBLIC_INTERFACE
+    return Padding(
+      padding: const EdgeInsets.all(20),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            'Personalized Job List',
+            style: TextStyle(
+              fontSize: 22,
+              fontWeight: FontWeight.w700,
+              color: Color(0xFF2D6A4F),
+            ),
+          ),
+          const SizedBox(height: 14),
+          // Placeholder for jobs
+          Expanded(
+            child: ListView.separated(
+              itemCount: 5,
+              separatorBuilder: (_, __) => const SizedBox(height: 12),
+              itemBuilder: (context, idx) => Card(
+                elevation: 2,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: ListTile(
+                  leading: const Icon(Icons.business_center, color: Color(0xFF40916C)),
+                  title: Text('Job Title #${idx + 1}'),
+                  subtitle: const Text('Company Name • Location'),
+                  trailing: Icon(Icons.arrow_forward_ios_rounded,
+                      size: 16, color: Color(0xFF2D6A4F)),
+                  onTap: () {
+                    // TODO: navigate to job details
+                  },
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
