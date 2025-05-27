@@ -59,7 +59,8 @@ class _CareerPathwayDashboardState extends State<CareerPathwayDashboard> {
     'Recommended Skills',
     'Profile & Updates',
     'Interview Prep',
-    'Career Pathing'
+    'Career Pathing',
+    'Resume Optimizer'
   ];
 
   // Placeholder method for sidebar navigation
