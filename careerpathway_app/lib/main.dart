@@ -753,25 +753,13 @@ class _InterviewPrepSection extends StatelessWidget {
   }
 }
 
+import 'career_pathing_growth_section.dart';
+
 class _CareerPathingSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // PUBLIC_INTERFACE
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: const [
-          Icon(Icons.trending_up, size: 44, color: Color(0xFF2D6A4F)),
-          SizedBox(height: 10),
-          Text(
-            'Career Pathing & Insights',
-            style: TextStyle(fontSize: 21, fontWeight: FontWeight.w600),
-          ),
-          SizedBox(height: 6),
-          Text('Explore future growth and career suggestions.'),
-        ],
-      ),
-    );
+    return CareerPathingGrowthSection();
   }
 }
 
