@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'resume_optimizer_section.dart';
 
 // PUBLIC_INTERFACE
 void main() {
@@ -233,6 +234,8 @@ class _CareerPathwayDashboardState extends State<CareerPathwayDashboard> {
         return _InterviewPrepSection();
       case 3:
         return _CareerPathingSection();
+      case 4:
+        return const ResumeCoverLetterOptimizerSection();
       default:
         // Personalized Job List is always shown on main dashboard
         return _PersonalizedJobListSection();
