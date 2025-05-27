@@ -84,14 +84,9 @@ class _CareerPathwayDashboardState extends State<CareerPathwayDashboard> {
         ),
         backgroundColor: Theme.of(context).colorScheme.primary,
         actions: [
-          // Notifications Icon
-          IconButton(
-            icon: const Icon(Icons.notifications_active_outlined),
-            tooltip: "Job Alerts & Notifications",
-            onPressed: () {
-              // TODO: handle notifications
-            },
-          ),
+          // Notification Icon + Dropdown
+          NotificationBellDropdown(),
+
           // Profile Avatar/Settings
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 8.0),
